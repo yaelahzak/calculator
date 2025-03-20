@@ -11,25 +11,30 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: #f4f4f4;
+            background: linear-gradient(135deg, #667eea, #764ba2);
         }
         .calculator {
             background: white;
             padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
             text-align: center;
+            width: 320px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         .display {
             width: 100%;
-            height: 50px;
-            font-size: 1.5em;
+            height: 70px;
+            font-size: 2em;
             text-align: right;
             padding: 10px;
             margin-bottom: 10px;
             border: none;
-            background: #ddd;
-            border-radius: 5px;
+            background: #f3f3f3;
+            border-radius: 8px;
+            box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.1);
         }
         .buttons {
             display: grid;
@@ -37,56 +42,85 @@
             gap: 10px;
         }
         button {
-            padding: 15px;
-            font-size: 1.2em;
+            padding: 20px;
+            font-size: 1.5em;
             border: none;
-            background: #007BFF;
+            background: #4a90e2;
             color: white;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
+            transition: 0.2s;
         }
         button:hover {
-            background: #0056b3;
+            background: #357ab7;
         }
         .operator {
-            background: #FF5733;
+            background: #f76c6c;
         }
         .operator:hover {
-            background: #C70039;
+            background: #d9534f;
         }
         .clear {
-            background: #FFC107;
+            background: #f8c102;
         }
         .clear:hover {
-            background: #E0A800;
+            background: #e0a800;
+        }
+        .special {
+            background: #2ecc71;
+        }
+        .special:hover {
+            background: #27ae60;
+        }
+        .mode-toggle {
+            align-self: flex-end;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: #333;
+        }
+        .dark-mode {
+            background: #222;
+            color: white;
+        }
+        .dark-mode .calculator {
+            background: #333;
+        }
+        .dark-mode .display {
+            background: #555;
+            color: white;
+        }
+        .dark-mode .mode-toggle {
+            color: white;
         }
     </style>
 </head>
 <body>
     <div class="calculator">
+        <button onclick="toggleDarkMode()" class="mode-toggle">🌙</button>
         <input type="text" id="display" class="display" disabled>
         <div class="buttons">
             <button onclick="clearDisplay()" class="clear">C</button>
-            <button onclick="appendToDisplay('(')">(</button>
-            <button onclick="appendToDisplay(')')">)</button>
-            <button onclick="appendToDisplay('/')" class="operator">/</button>
+            <button onclick="deleteLast()">⌫</button>
+            <button onclick="appendToDisplay('%')">%</button>
+            <button onclick="appendToDisplay('/')" class="operator">÷</button>
             <button onclick="appendToDisplay('7')">7</button>
             <button onclick="appendToDisplay('8')">8</button>
             <button onclick="appendToDisplay('9')">9</button>
-            <button onclick="appendToDisplay('*')" class="operator">*</button>
+            <button onclick="appendToDisplay('*')" class="operator">×</button>
             <button onclick="appendToDisplay('4')">4</button>
             <button onclick="appendToDisplay('5')">5</button>
             <button onclick="appendToDisplay('6')">6</button>
-            <button onclick="appendToDisplay('-')" class="operator">-</button>
+            <button onclick="appendToDisplay('-')" class="operator">−</button>
             <button onclick="appendToDisplay('1')">1</button>
             <button onclick="appendToDisplay('2')">2</button>
             <button onclick="appendToDisplay('3')">3</button>
             <button onclick="appendToDisplay('+')" class="operator">+</button>
-            <button onclick="appendToDisplay('0')">0</button>
+            <button onclick="appendToDisplay('0')" style="grid-column: span 2;">0</button>
             <button onclick="appendToDisplay('.')">.</button>
             <button onclick="calculateResult()" class="operator">=</button>
-            <button onclick="appendToDisplay('**')" class="operator">^</button>
-            <button onclick="appendToDisplay('Math.sqrt(')">√</button>
         </div>
     </div>
     <script>
@@ -96,13 +130,26 @@
         function clearDisplay() {
             document.getElementById('display').value = '';
         }
+        function deleteLast() {
+            let display = document.getElementById('display');
+            display.value = display.value.slice(0, -1);
+        }
         function calculateResult() {
             try {
                 document.getElementById('display').value = eval(document.getElementById('display').value);
+                localStorage.setItem('lastResult', document.getElementById('display').value);
             } catch (e) {
                 alert('Input tidak valid!');
             }
         }
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+        }
+        window.onload = function() {
+            if (localStorage.getItem('lastResult')) {
+                document.getElementById('display').value = localStorage.getItem('lastResult');
+            }
+        };
     </script>
 </body>
 </html>
