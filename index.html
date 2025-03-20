@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kalkulator Lengkap</title>
+    <title>Calculator</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -11,7 +11,13 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: #f8f9fa;
+            margin: 0;
+            transition: background 0.3s ease;
+        }
+        .dark-mode {
+            background: #181818;
+            color: white;
         }
         .calculator {
             background: white;
@@ -19,58 +25,70 @@
             border-radius: 15px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
             text-align: center;
-            width: 320px;
+            width: 350px;
             display: flex;
             flex-direction: column;
             align-items: center;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+        .dark-mode .calculator {
+            background: #333;
+            color: white;
         }
         .display {
             width: 100%;
-            height: 70px;
+            height: 60px;
             font-size: 2em;
             text-align: right;
             padding: 10px;
             margin-bottom: 10px;
             border: none;
-            background: #f3f3f3;
+            background: #eef1f5;
             border-radius: 8px;
-            box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .dark-mode .display {
+            background: #222;
+            color: white;
         }
         .buttons {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
+            gap: 8px;
+            width: 100%;
         }
         button {
-            padding: 20px;
-            font-size: 1.5em;
+            padding: 15px;
+            font-size: 1.2em;
             border: none;
-            background: #4a90e2;
-            color: white;
+            background: #e0e0e0;
+            color: black;
             border-radius: 8px;
             cursor: pointer;
             transition: 0.2s;
         }
+        .dark-mode button {
+            background: #444;
+            color: white;
+        }
         button:hover {
-            background: #357ab7;
+            background: #d0d0d0;
+        }
+        .dark-mode button:hover {
+            background: #555;
         }
         .operator {
-            background: #f76c6c;
+            background: #007bff;
+            color: white;
         }
-        .operator:hover {
-            background: #d9534f;
-        }
-        .clear {
-            background: #f8c102;
-        }
-        .clear:hover {
-            background: #e0a800;
+        .dark-mode .operator {
+            background: #0056b3;
         }
         .special {
-            background: #2ecc71;
+            background: #28a745;
+            color: white;
         }
-        .special:hover {
-            background: #27ae60;
+        .dark-mode .special {
+            background: #1e7e34;
         }
         .mode-toggle {
             align-self: flex-end;
@@ -80,17 +98,6 @@
             background: none;
             border: none;
             color: #333;
-        }
-        .dark-mode {
-            background: #222;
-            color: white;
-        }
-        .dark-mode .calculator {
-            background: #333;
-        }
-        .dark-mode .display {
-            background: #555;
-            color: white;
         }
         .dark-mode .mode-toggle {
             color: white;
@@ -102,25 +109,34 @@
         <button onclick="toggleDarkMode()" class="mode-toggle">🌙</button>
         <input type="text" id="display" class="display" disabled>
         <div class="buttons">
-            <button onclick="clearDisplay()" class="clear">C</button>
-            <button onclick="deleteLast()">⌫</button>
-            <button onclick="appendToDisplay('%')">%</button>
+            <button onclick="appendToDisplay('Rad')">Rad</button>
+            <button onclick="appendToDisplay('Deg')">Deg</button>
+            <button onclick="appendToDisplay('x!')">x!</button>
+            <button onclick="clearDisplay()" class="special">AC</button>
+            <button onclick="appendToDisplay('sin')">sin</button>
+            <button onclick="appendToDisplay('cos')">cos</button>
+            <button onclick="appendToDisplay('tan')">tan</button>
             <button onclick="appendToDisplay('/')" class="operator">÷</button>
+            <button onclick="appendToDisplay('π')">π</button>
+            <button onclick="appendToDisplay('e')">e</button>
+            <button onclick="appendToDisplay('log')">log</button>
+            <button onclick="appendToDisplay('*')" class="operator">×</button>
             <button onclick="appendToDisplay('7')">7</button>
             <button onclick="appendToDisplay('8')">8</button>
             <button onclick="appendToDisplay('9')">9</button>
-            <button onclick="appendToDisplay('*')" class="operator">×</button>
+            <button onclick="appendToDisplay('-')" class="operator">−</button>
             <button onclick="appendToDisplay('4')">4</button>
             <button onclick="appendToDisplay('5')">5</button>
             <button onclick="appendToDisplay('6')">6</button>
-            <button onclick="appendToDisplay('-')" class="operator">−</button>
+            <button onclick="appendToDisplay('+')" class="operator">+</button>
             <button onclick="appendToDisplay('1')">1</button>
             <button onclick="appendToDisplay('2')">2</button>
             <button onclick="appendToDisplay('3')">3</button>
-            <button onclick="appendToDisplay('+')" class="operator">+</button>
-            <button onclick="appendToDisplay('0')" style="grid-column: span 2;">0</button>
-            <button onclick="appendToDisplay('.')">.</button>
             <button onclick="calculateResult()" class="operator">=</button>
+            <button onclick="appendToDisplay('0')">0</button>
+            <button onclick="appendToDisplay('.')">.</button>
+            <button onclick="appendToDisplay('EXP')">EXP</button>
+            <button onclick="appendToDisplay('Ans')">Ans</button>
         </div>
     </div>
     <script>
@@ -130,14 +146,10 @@
         function clearDisplay() {
             document.getElementById('display').value = '';
         }
-        function deleteLast() {
-            let display = document.getElementById('display');
-            display.value = display.value.slice(0, -1);
-        }
         function calculateResult() {
+            let expression = document.getElementById('display').value;
             try {
-                document.getElementById('display').value = eval(document.getElementById('display').value);
-                localStorage.setItem('lastResult', document.getElementById('display').value);
+                document.getElementById('display').value = eval(expression);
             } catch (e) {
                 alert('Input tidak valid!');
             }
@@ -145,11 +157,6 @@
         function toggleDarkMode() {
             document.body.classList.toggle('dark-mode');
         }
-        window.onload = function() {
-            if (localStorage.getItem('lastResult')) {
-                document.getElementById('display').value = localStorage.getItem('lastResult');
-            }
-        };
     </script>
 </body>
 </html>
